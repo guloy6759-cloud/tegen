@@ -1,0 +1,14 @@
+{
+  "name": "@tegen/bot",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "grammy": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}
