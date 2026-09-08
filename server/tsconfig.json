@@ -12,7 +12,8 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": [
     "src/**/*.ts"
