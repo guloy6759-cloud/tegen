@@ -1,0 +1,12 @@
+{
+  "name": "tegen",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/*", "server", "packages/*"],
+  "scripts": {
+    "dev:web": "npm --workspace apps/mini-app run dev",
+    "dev:api": "npm --workspace server run start:dev",
+    "build:web": "npm --workspace apps/mini-app run build",
+    "build:api": "npm --workspace server run build"
+  }
+}
