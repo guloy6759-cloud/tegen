@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tegen Admin</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .login {
+      max-width: 430px;
+      margin: 80px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 5px 25px rgba(0,0,0,.08);
+    }
+
+    .login h2 {
+      margin-top: 0;
+      font-size: 30px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button:hover {
+      opacity: .9;
+    }
+
+    .logout {
+      background: #ef4444;
+    }
+
+    .dashboard {
+      display: none;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 16px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.06);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      color: #6b7280;
+      font-size: 16px;
+    }
+
+    .number {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .section {
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      margin-bottom: 25px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.06);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    th {
+      background: #f9fafb;
+    }
+
+    .message {
+      margin-top: 12px;
+      color: #dc2626;
+    }
+
+    .success {
+      color: #16a34a;
+    }
+
+    .error-box {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 15px;
+    }
+
+    .loading {
+      padding: 20px;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 0 12px;
+        margin-top: 20px;
+      }
+
+      header {
+        padding: 16px;
+      }
+
+      header h1 {
+        font-size: 20px;
+      }
+
+      .login {
+        margin: 40px 15px;
+        padding: 24px;
+      }
+
+      .login h2 {
+        font-size: 26px;
+      }
+
+      table {
+        font-size: 13px;
+      }
+
+      th,
+      td {
+        padding: 9px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🛒 Tegen Admin</h1>
+  <button class="logout" onclick="logout()">Chiqish</button>
+</header>
+
+<!-- LOGIN -->
+<div id="loginPage" class="login">
+
+  <h2>Admin kirish</h2>
+
+  <input
+    id="username"
+    type="text"
+    placeholder="Login"
+    autocomplete="username"
+  >
+
+  <input
+    id="password"
+    type="password"
+    placeholder="Parol"
+    autocomplete="current-password"
+  >
+
+  <button onclick="login()">Kirish</button>
+
+  <div id="loginMessage" class="message"></div>
+
+</div>
+
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="dashboard">
+
+  <div class="container">
+
+    <h2>Dashboard</h2>
+
+    <div class="cards">
+
+      <div class="card">
+        <h3>Mahsulotlar</h3>
+        <div id="productCount" class="number">0</div>
+      </div>
+
+      <div class="card">
+        <h3>Faol mahsulotlar</h3>
+        <div id="activeCount" class="number">0</div>
+      </div>
+
+      <div class="card">
+        <h3>Buyurtmalar</h3>
+        <div id="orderCount" class="number">0</div>
+      </div>
+
+      <div class="card">
+        <h3>Foydalanuvchilar</h3>
+        <div id="userCount" class="number">0</div>
+      </div>
+
+    </div>
+
+
+    <!-- MAHSULOTLAR -->
+    <div class="section">
+
+      <h2>Mahsulotlar</h2>
+
+      <button onclick="loadProducts()">
+        🔄 Yangilash
+      </button>
+
+      <div id="productError"></div>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nomi</th>
+            <th>Narxi</th>
+            <th>Holati</th>
+          </tr>
+        </thead>
+
+        <tbody id="productsTable">
+
+          <tr>
+            <td colspan="4" class="loading">
+              Mahsulotlar yuklanmoqda...
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  /*
+   * ==========================================
+   * TEGEN SERVER
+   * ==========================================
+   */
+
+  const API_URL =
+    "https://tegenserver-production.up.railway.app";
+
+
+  /*
+   * ==========================================
+   * ADMIN LOGIN
+   * ==========================================
+   */
+
+  const ADMIN_LOGIN = "admin";
+  const ADMIN_PASSWORD = "123456";
+
+
+  /*
+   * LOGIN
+   */
+
+  function login() {
+
+    const username =
+      document.getElementById("username").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
+    const message =
+      document.getElementById("loginMessage");
+
+
+    if (
+      username === ADMIN_LOGIN &&
+      password === ADMIN_PASSWORD
+    ) {
+
+      localStorage.setItem(
+        "tegen_admin",
+        "true"
+      );
+
+      message.textContent = "";
+
+      showDashboard();
+
+    } else {
+
+      message.textContent =
+        "Login yoki parol noto'g'ri.";
+
+    }
+
+  }
+
+
+  /*
+   * LOGOUT
+   */
+
+  function logout() {
+
+    localStorage.removeItem(
+      "tegen_admin"
+    );
+
+    document.getElementById(
+      "dashboard"
+    ).style.display = "none";
+
+    document.getElementById(
+      "loginPage"
+    ).style.display = "block";
+
+  }
+
+
+  /*
+   * DASHBOARDNI KO'RSATISH
+   */
+
+  function showDashboard() {
+
+    document.getElementById(
+      "loginPage"
+    ).style.display = "none";
+
+    document.getElementById(
+      "dashboard"
+    ).style.display = "block";
+
+
+    loadDashboard();
+
+    loadProducts();
+
+  }
+
+
+  /*
+   * DASHBOARD STATISTIKA
+   */
+
+  async function loadDashboard() {
+
+    try {
+
+      const response =
+        await fetch(
+          API_URL + "/admin/dashboard"
+        );
+
+
+      if (!response.ok) {
+        throw new Error(
+          "Dashboard API xatosi: " +
+          response.status
+        );
+      }
+
+
+      const data =
+        await response.json();
+
+
+      document.getElementById(
+        "productCount"
+      ).textContent =
+        data.products ?? 0;
+
+
+      document.getElementById(
+        "activeCount"
+      ).textContent =
+        data.activeProducts ?? 0;
+
+
+      document.getElementById(
+        "orderCount"
+      ).textContent =
+        data.orders ?? 0;
+
+
+      document.getElementById(
+        "userCount"
+      ).textContent =
+        data.users ?? 0;
+
+
+    } catch (error) {
+
+      console.error(
+        "Dashboard error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  /*
+   * MAHSULOTLARNI OLISH
+   */
+
+  async function loadProducts() {
+
+    const table =
+      document.getElementById(
+        "productsTable"
+      );
+
+    const errorBox =
+      document.getElementById(
+        "productError"
+      );
+
+
+    errorBox.innerHTML = "";
+
+
+    table.innerHTML = `
+      <tr>
+        <td colspan="4" class="loading">
+          ⏳ Mahsulotlar yuklanmoqda...
+        </td>
+      </tr>
+    `;
+
+
+    try {
+
+      const response =
+        await fetch(
+          API_URL + "/products"
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Server HTTP " +
+          response.status
+        );
+
+      }
+
+
+      const products =
+        await response.json();
+
+
+      /*
+       * Mahsulotlar soni
+       */
+
+      document.getElementById(
+        "productCount"
+      ).textContent =
+        products.length;
+
+
+      /*
+       * Faol mahsulotlar
+       */
+
+      document.getElementById(
+        "activeCount"
+      ).textContent =
+        products.filter(
+          p => p.isActive
+        ).length;
+
+
+      /*
+       * Mahsulot yo'q
+       */
+
+      if (!products.length) {
+
+        table.innerHTML = `
+          <tr>
+            <td colspan="4">
+              Mahsulotlar yo'q.
+            </td>
+          </tr>
+        `;
+
+        return;
+
+      }
+
+
+      /*
+       * JADVAL
+       *
+       * Server "name" qaytaradi.
+       * Eski kod "title" kutayotgan edi.
+       */
+
+      table.innerHTML =
+        products.map(product => {
+
+          const name =
+            product.name ??
+            product.title ??
+            "Nomsiz mahsulot";
+
+
+          const price =
+            Number(
+              product.price ?? 0
+            );
+
+
+          return `
+            <tr>
+
+              <td>
+                ${escapeHtml(
+                  String(product.id)
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(name)}
+              </td>
+
+              <td>
+                ${price.toLocaleString(
+                  "uz-UZ"
+                )} so'm
+              </td>
+
+              <td>
+                ${
+                  product.isActive
+                    ? "✅ Faol"
+                    : "❌ Nofaol"
+                }
+              </td>
+
+            </tr>
+          `;
+
+        }).join("");
+
+
+    } catch (error) {
+
+      console.error(
+        "Products error:",
+        error
+      );
+
+
+      table.innerHTML = `
+        <tr>
+          <td colspan="4">
+            Server bilan bog'lanib bo'lmadi.
+          </td>
+        </tr>
+      `;
+
+
+      errorBox.innerHTML = `
+        <div class="error-box">
+          ❌ Serverga ulanib bo'lmadi.
+          <br>
+          <small>
+            ${escapeHtml(
+              error.message ||
+              "Noma'lum xato"
+            )}
+          </small>
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  /*
+   * XAVFSIZ HTML
+   */
+
+  function escapeHtml(text) {
+
+    const div =
+      document.createElement("div");
+
+    div.textContent =
+      text ?? "";
+
+    return div.innerHTML;
+
+  }
+
+
+  /*
+   * ENTER BILAN LOGIN
+   */
+
+  document
+    .getElementById("password")
+    .addEventListener(
+      "keydown",
+      function(event) {
+
+        if (event.key === "Enter") {
+          login();
+        }
+
+      }
+    );
+
+
+  /*
+   * OLDINDAN LOGIN QILINGAN BO'LSA
+   */
+
+  if (
+    localStorage.getItem(
+      "tegen_admin"
+    ) === "true"
+  ) {
+
+    showDashboard();
+
+  }
+
+</script>
+
+</body>
+  </html>
