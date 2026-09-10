@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tegen Admin</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f5f9;
+      color: #17181a;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    .logout {
+      background: #ef4444;
+      color: white;
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 22px 16px 60px;
+    }
+
+    h2 {
+      margin-top: 10px;
+    }
+
+    .login,
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.06);
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 13px;
+      margin: 7px 0 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
+    }
+
+    .primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .success {
+      background: #16a34a;
+      color: white;
+    }
+
+    .danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 25px;
+    }
+
+    .stat {
+      background: white;
+      border-radius: 17px;
+      padding: 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.05);
+    }
+
+    .stat span {
+      display: block;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .stat strong {
+      font-size: 34px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th,
+    td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 12px;
+      background: #f1f5f9;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 650px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      table {
+        font-size: 13px;
+      }
+
+      th,
+      td {
+        padding: 9px 5px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🛒 Tegen Admin</h1>
+  <button class="logout" onclick="logout()">Chiqish</button>
+</header>
+
+<main>
+
+  <section id="loginBox" class="login">
+    <h2>Admin kirish</h2>
+
+    <input
+      id="adminToken"
+      type="password"
+      placeholder="ADMIN_TOKEN"
+    >
+
+    <button class="primary" onclick="login()">
+      Kirish
+    </button>
+
+    <div id="loginMessage" class="message"></div>
+  </section>
+
+  <section id="panel" class="hidden">
+
+    <h2>Dashboard</h2>
+
+    <div class="stats">
+
+      <div class="stat">
+        <span>Mahsulotlar</span>
+        <strong id="productsCount">0</strong>
+      </div>
+
+      <div class="stat">
+        <span>Faol mahsulotlar</span>
+        <strong id="activeProductsCount">0</strong>
+      </div>
+
+      <div class="stat">
+        <span>Buyurtmalar</span>
+        <strong id="ordersCount">0</strong>
+      </div>
+
+      <div class="stat">
+        <span>Foydalanuvchilar</span>
+        <strong id="usersCount">0</strong>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <h2>📦 Mahsulotlar</h2>
+
+      <button class="primary" onclick="loadProducts()">
+        🔄 Yangilash
+      </button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nomi</th>
+            <th>Narxi</th>
+            <th>Holati</th>
+          </tr>
+        </thead>
+
+        <tbody id="productsTable">
+          <tr>
+            <td colspan="4">
+              Yuklanmoqda...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>➕ Mahsulot qo‘shish</h2>
+
+      <input
+        id="productName"
+        placeholder="Mahsulot nomi"
+      >
+
+      <input
+        id="productDescription"
+        placeholder="Tavsif"
+      >
+
+      <input
+        id="productPrice"
+        type="number"
+        placeholder="Narxi"
+      >
+
+      <input
+        id="productImage"
+        placeholder="Rasm URL"
+      >
+
+      <input
+        id="categoryId"
+        type="number"
+        placeholder="Category ID"
+      >
+
+      <button class="success" onclick="createProduct()">
+        Mahsulot qo‘shish
+      </button>
+
+      <div id="productMessage" class="message"></div>
+    </div>
+
+    <div class="card">
+      <h2>🛍 Buyurtmalar</h2>
+
+      <button class="primary" onclick="loadOrders()">
+        🔄 Buyurtmalarni yangilash
+      </button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Mijoz</th>
+            <th>Summa</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody id="ordersTable">
+          <tr>
+            <td colspan="4">
+              Buyurtmalar yuklanmagan.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+
+  const API_URL =
+    "https://tegenserver-production.up.railway.app";
+
+  let TOKEN = localStorage.getItem("tegen_admin_token") || "";
+
+  const loginBox = document.getElementById("loginBox");
+  const panel = document.getElementById("panel");
+
+  function showPanel() {
+    loginBox.classList.add("hidden");
+    panel.classList.remove("hidden");
+
+    loadDashboard();
+    loadProducts();
+    loadOrders();
+  }
+
+  async function login() {
+
+    const input =
+      document.getElementById("adminToken");
+
+    TOKEN = input.value.trim();
+
+    if (!TOKEN) {
+      document.getElementById("loginMessage").textContent =
+        "ADMIN_TOKEN kiriting.";
+      return;
+    }
+
+    localStorage.setItem(
+      "tegen_admin_token",
+      TOKEN
+    );
+
+    try {
+
+      const response =
+        await fetch(API_URL + "/admin/dashboard");
+
+      if (!response.ok) {
+        throw new Error("Server xatosi");
+      }
+
+      showPanel();
+
+    } catch (error) {
+
+      document.getElementById("loginMessage").textContent =
+        "Serverga ulanib bo‘lmadi: " + error.message;
+    }
+  }
+
+  function logout() {
+
+    localStorage.removeItem(
+      "tegen_admin_token"
+    );
+
+    TOKEN = "";
+
+    location.reload();
+  }
+
+  async function loadDashboard() {
+
+    try {
+
+      const response =
+        await fetch(API_URL + "/admin/dashboard");
+
+      if (!response.ok) {
+        throw new Error("Dashboard xatosi");
+      }
+
+      const data = await response.json();
+
+      document.getElementById(
+        "productsCount"
+      ).textContent = data.products ?? 0;
+
+      document.getElementById(
+        "activeProductsCount"
+      ).textContent = data.activeProducts ?? 0;
+
+      document.getElementById(
+        "ordersCount"
+      ).textContent = data.orders ?? 0;
+
+      document.getElementById(
+        "usersCount"
+      ).textContent = data.users ?? 0;
+
+    } catch (error) {
+
+      console.error(error);
+    }
+  }
+
+  async function loadProducts() {
+
+    const table =
+      document.getElementById("productsTable");
+
+    try {
+
+      const response =
+        await fetch(API_URL + "/products");
+
+      if (!response.ok) {
+        throw new Error("Products API xatosi");
+      }
+
+      const products =
+        await response.json();
+
+      if (!products.length) {
+
+        table.innerHTML =
+          `<tr>
+             <td colspan="4">
+               Hozircha mahsulot yo‘q.
+             </td>
+           </tr>`;
+
+        return;
+      }
+
+      table.innerHTML =
+        products.map(product => {
+
+          return `
+            <tr>
+              <td>${product.id}</td>
+              <td>${escapeHtml(product.name)}</td>
+              <td>${product.price.toLocaleString()} so‘m</td>
+              <td>
+                ${product.isActive ? "✅ Faol" : "❌ O‘chiq"}
+              </td>
+            </tr>
+          `;
+
+        }).join("");
+
+    } catch (error) {
+
+      table.innerHTML =
+        `<tr>
+          <td colspan="4">
+            Server bilan bog‘lanib bo‘lmadi.
+          </td>
+        </tr>`;
+
+      console.error(error);
+    }
+  }
+
+  async function createProduct() {
+
+    const message =
+      document.getElementById("productMessage");
+
+    if (!TOKEN) {
+      message.textContent =
+        "Avval admin token bilan kiring.";
+      return;
+    }
+
+    const data = {
+
+      token: TOKEN,
+
+      name:
+        document.getElementById("productName").value.trim(),
+
+      description:
+        document.getElementById("productDescription").value.trim() || null,
+
+      price:
+        Number(document.getElementById("productPrice").value),
+
+      imageUrl:
+        document.getElementById("productImage").value.trim() || null,
+
+      categoryId:
+        Number(document.getElementById("categoryId").value)
+
+    };
+
+    if (!data.name || !data.price || !data.categoryId) {
+
+      message.textContent =
+        "Nom, narx va Category ID ni kiriting.";
+
+      return;
+    }
+
+    try {
+
+      const response =
+        await fetch(API_URL + "/admin/products", {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify(data)
+
+        });
+
+      const result =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.message || "Mahsulot qo‘shilmadi"
+        );
+      }
+
+      message.textContent =
+        "✅ Mahsulot muvaffaqiyatli qo‘shildi.";
+
+      document.getElementById("productName").value = "";
+      document.getElementById("productDescription").value = "";
+      document.getElementById("productPrice").value = "";
+      document.getElementById("productImage").value = "";
+      document.getElementById("categoryId").value = "";
+
+      loadDashboard();
+      loadProducts();
+
+    } catch (error) {
+
+      message.textContent =
+        "❌ " + error.message;
+    }
+  }
+
+  async function loadOrders() {
+
+    const table =
+      document.getElementById("ordersTable");
+
+    try {
+
+      const response =
+        await fetch(API_URL + "/orders");
+
+      if (!response.ok) {
+        throw new Error("Orders API xatosi");
+      }
+
+      const orders =
+        await response.json();
+
+      if (!orders.length) {
+
+        table.innerHTML =
+          `<tr>
+            <td colspan="4">
+              Hozircha buyurtma yo‘q.
+            </td>
+          </tr>`;
+
+        return;
+      }
+
+      table.innerHTML =
+        orders.map(order => {
+
+          const name =
+            order.user?.firstName || "Noma’lum";
+
+          return `
+            <tr>
+              <td>#${order.id}</td>
+              <td>${escapeHtml(name)}</td>
+              <td>${order.total.toLocaleString()} so‘m</td>
+              <td>${escapeHtml(order.status)}</td>
+            </tr>
+          `;
+
+        }).join("");
+
+    } catch (error) {
+
+      table.innerHTML =
+        `<tr>
+          <td colspan="4">
+            Buyurtmalarni yuklab bo‘lmadi.
+          </td>
+        </tr>`;
+
+      console.error(error);
+    }
+  }
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  if (TOKEN) {
+    showPanel();
+  }
+
+</script>
+
+</body>
+</html>
