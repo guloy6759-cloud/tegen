@@ -1,0 +1,27 @@
+{
+  "name": "@tegen/server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "commonjs",
+  "scripts": {
+    "build": "prisma generate --schema=./schema.prisma && tsc",
+    "start": "node dist/main.js",
+    "dev": "tsx src/main.ts",
+    "prisma:generate": "prisma generate --schema=./schema.prisma",
+    "prisma:migrate": "prisma migrate deploy"
+  },
+  "dependencies": {
+    "@nestjs/common": "latest",
+    "@nestjs/core": "latest",
+    "@nestjs/platform-express": "latest",
+    "@prisma/client": "latest",
+    "reflect-metadata": "latest",
+    "rxjs": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "prisma": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}
